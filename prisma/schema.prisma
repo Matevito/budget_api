@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String  @id @default(uuid())
+  username    String  @unique
+  email       String  @unique
+  password    String
+  description String? @default("about me...")
+  admin       Boolean @default(false)
+
+  Households Household[]
+  expense    Expense[]
+
+  @@index([email, username])
+}
+
+model Household {
+  id          String    @id @default(uuid())
+  title       String
+  description String    @default("Description placeholder...")
+  members     User[]
+  projects    Project[]
+}
+
+model Project {
+  id          String    @id @default(uuid())
+  title       String
+  description String    @default("Description placeholder")
+  budget      Float     @default(0)
+  expenses    Expense[]
+
+  Household   Household @relation(fields: [householdId], references: [id])
+  householdId String
+}
+
+model Expense {
+  id        String          @id @default(uuid())
+  title     String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  price     Float           @default(0)
+  category  ExpenseCategory
+
+  author    User    @relation(fields: [userId], references: [id])
+  userId    String
+  Project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+}
+
+enum ExpenseCategory {
+  TAXES
+  GROCERIES
+  HOBBIES
+  TRANSPORTATION
+  MISCELANEUS
+}
