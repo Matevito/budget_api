@@ -8,7 +8,8 @@
     "start": "node build/server",
     "dev": "ts-node-dev src/server.ts",
     "lint": "ts-standard --fix",
-    "test": ""
+    "test": "",
+    "script": "ts-node-dev"
   },
   "keywords": [],
   "author": "matevito",
