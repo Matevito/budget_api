@@ -20,8 +20,6 @@ model User {
 
   Households Household[]
   expense    Expense[]
-
-  @@index([email, username])
 }
 
 model Household {
