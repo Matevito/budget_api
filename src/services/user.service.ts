@@ -97,12 +97,61 @@ export const createUser = async (userData: UserFull): Promise<UserSecure> => {
 }
 
 // UPDATE METHODS
-// update user info
+// update user info // no password
+export const updateUser = async (updateData: UserSecure): Promise<UserSecure> => {
+  try {
+    const updatedUser: UserSecure | any = await prisma.user.update({
+      where: {
+        id: updateData.id
+      },
+      data: {
+        username: updateData.username,
+        email: updateData.email,
+        description: updateData.description,
+        admin: updateData.admin
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        description: true,
+        admin: true
+      }
+    })
 
-// update password?
+    return updatedUser
+  } catch (e) {
+    throw new Error('Error fetching data')
+  }
+}
 
-// DELETE METHODS
+// update admin status
+export const updateAdminStatus = async (userData: UserSecure): Promise<UserSecure> => {
+  try {
+    const updatedUser: UserSecure | any = await prisma.user.update({
+      where: {
+        id: userData.id
+      },
+      data: {
+        admin: !userData.admin
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        description: true,
+        admin: true
+      }
+    })
 
+    return updatedUser
+  } catch (e) {
+    throw new Error('Error fetching data')
+  }
+}
+// todo: update password?
+
+// todo: delete method? is needed?
 /*****
  try {
 
