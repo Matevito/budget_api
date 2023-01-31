@@ -1,8 +1,9 @@
 import { UserFull, UserSecure } from '../types'
 import { prisma } from '../utils/prisma'
+import bcrypt from 'bcryptjs'
 
 // GET METHODS
-export const getUserByIndex = async (index: string): Promise<UserFull | undefined> => {
+export const getUserByIndex = async (index: string): Promise<UserFull> => {
   try {
     // get user with it's id, email or username
     const userInfo: UserFull[] | any = await prisma.user.findMany({
@@ -24,7 +25,28 @@ export const getUserByIndex = async (index: string): Promise<UserFull | undefine
   }
 }
 
-export const getUsers = async (): Promise<UserSecure[] | undefined> => {
+export const getUserByIdSecure = async (id: string): Promise<UserSecure> => {
+  try {
+    const userInfo: UserSecure[] | any = await prisma.user.findMany({
+      where: {
+        id
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        description: true,
+        admin: true
+      }
+    })
+
+    return userInfo
+  } catch (e) {
+    throw new Error('Error fetching data')
+  }
+}
+
+export const getUsers = async (): Promise<UserSecure[]> => {
   try {
     const usersList: UserFull[] | any = await prisma.user.findMany()
 
@@ -44,8 +66,40 @@ export const getUsers = async (): Promise<UserSecure[] | undefined> => {
 }
 
 // CREATE METHODS
+export const createUser = async (userData: UserFull): Promise<UserSecure> => {
+  try {
+    // genereating hash to store
+    const saltRounds = Number(process.env.SALT)
+    const plainPassword = userData.password
+    const salt = bcrypt.genSaltSync(saltRounds)
+    const hash = bcrypt.hashSync(plainPassword, salt)
+
+    // storing user in db
+    const newUser: UserFull | any = await prisma.user.create({
+      data: {
+        username: userData.username,
+        email: userData.email,
+        password: hash
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        description: true,
+        admin: true
+      }
+    })
+
+    return newUser
+  } catch (e) {
+    throw new Error('Error fetching data')
+  }
+}
 
 // UPDATE METHODS
+// update user info
+
+// update password?
 
 // DELETE METHODS
 

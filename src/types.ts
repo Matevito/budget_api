@@ -1,7 +1,7 @@
 export interface UserFull {
   id: string
   username: string
-  password: String
+  password: string
   email: string
   description: string
   admin: boolean
